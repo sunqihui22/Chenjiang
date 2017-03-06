@@ -2,7 +2,7 @@ package com.shtoone.chenjiang.mvp.contract.upload;
 
 
 import com.shtoone.chenjiang.mvp.contract.base.BaseContract;
-import com.shtoone.chenjiang.mvp.model.entity.db.ResultData;
+import com.shtoone.chenjiang.mvp.model.entity.db.RTData;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ import java.util.List;
  */
 public interface ResultDataContract {
     interface View extends BaseContract.View {
-        void response(List<ResultData> mResultData, int pagination);
+        void response(List<RTData> mResultData, int pagination);
     }
 
     interface Presenter extends BaseContract.Presenter {

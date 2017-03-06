@@ -3,11 +3,13 @@ package com.shtoone.chenjiang.mvp.model.entity.db;
 
 import org.litepal.crud.DataSupport;
 
+import java.io.Serializable;
+
 /**
  * Author：leguang on 2016/11/2 0002 13:54
  * Email：langmanleguang@qq.com
  */
-public class CezhanData extends DataSupport {
+public class CezhanData extends DataSupport implements Serializable {
     private long id;
     private int number;
     private String measureDirection;

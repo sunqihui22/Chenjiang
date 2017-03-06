@@ -2,7 +2,7 @@ package com.shtoone.chenjiang.mvp.presenter.upload;
 
 import com.shtoone.chenjiang.common.Constants;
 import com.shtoone.chenjiang.mvp.contract.upload.OriginalDataContract;
-import com.shtoone.chenjiang.mvp.model.entity.db.OriginalData;
+import com.shtoone.chenjiang.mvp.model.entity.db.OriginData;
 import com.shtoone.chenjiang.mvp.presenter.base.BasePresenter;
 
 import org.litepal.crud.DataSupport;
@@ -34,15 +34,15 @@ public class OriginalDataPresenter extends BasePresenter<OriginalDataContract.Vi
 
     @Override
     public void request(final int pagination) {
-        mRxManager.add(Observable.create(new Observable.OnSubscribe<List<OriginalData>>() {
+        mRxManager.add(Observable.create(new Observable.OnSubscribe<List<OriginData>>() {
                     @Override
-                    public void call(Subscriber<? super List<OriginalData>> subscriber) {
-                        List<OriginalData> mOriginalData = null;
+                    public void call(Subscriber<? super List<OriginData>> subscriber) {
+                        List<OriginData> mOriginalData = null;
                         try {
                             mOriginalData = DataSupport.select("*")
                                     .order("id").limit(Constants.PAGE_SIZE)
                                     .offset(pagination * Constants.PAGE_SIZE)
-                                    .find(OriginalData.class);
+                                    .find(OriginData.class);
                             subscriber.onNext(mOriginalData);
                         } catch (Exception ex) {
                             subscriber.onError(ex);
@@ -53,9 +53,9 @@ public class OriginalDataPresenter extends BasePresenter<OriginalDataContract.Vi
                         }
                     }
                 }).subscribeOn(Schedulers.computation())
-                        .observeOn(AndroidSchedulers.mainThread()).subscribe(new RxSubscriber<List<OriginalData>>() {
+                        .observeOn(AndroidSchedulers.mainThread()).subscribe(new RxSubscriber<List<OriginData>>() {
                             @Override
-                            public void _onNext(List<OriginalData> mOriginalData) {
+                            public void _onNext(List<OriginData> mOriginalData) {
                                 getView().response(mOriginalData, pagination);
                             }
                         })

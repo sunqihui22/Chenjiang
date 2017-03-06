@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothDevice;
 import com.shtoone.chenjiang.BaseApplication;
 import com.shtoone.chenjiang.common.AudioPlayer;
 import com.shtoone.chenjiang.common.Constants;
+import com.shtoone.chenjiang.common.PingCha;
 import com.shtoone.chenjiang.mvp.contract.measure.MeasureContract;
 import com.shtoone.chenjiang.mvp.model.entity.db.CezhanData;
 import com.shtoone.chenjiang.mvp.model.entity.db.JidianData;
@@ -28,6 +29,8 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
+import static okhttp3.internal.Internal.instance;
+
 /**
  * Author：leguang on 2016/10/9 0009 15:49
  * Email：langmanleguang@qq.com
@@ -35,6 +38,8 @@ import rx.schedulers.Schedulers;
 public class MeasureRightPresenter extends BasePresenter<MeasureContract.View> implements MeasureContract.Presenter {
     private static final String TAG = MeasureRightPresenter.class.getSimpleName();
     private BluetoothManager mBluetoothManager;
+    PingCha instance;
+    public boolean isSaved;
 
     public MeasureRightPresenter(MeasureContract.View mView) {
         super(mView);
@@ -115,7 +120,7 @@ public class MeasureRightPresenter extends BasePresenter<MeasureContract.View> i
     }
 
     @Override
-    public void requestCezhanData(final YusheshuizhunxianData mYusheshuizhunxianData) {
+    public void requestCezhanData(final YusheshuizhunxianData mYusheshuizhunxianData){
         mRxManager.add(Observable.create(new Observable.OnSubscribe<List<CezhanData>>() {
                     @Override
                     public void call(Subscriber<? super List<CezhanData>> subscriber) {
@@ -129,7 +134,7 @@ public class MeasureRightPresenter extends BasePresenter<MeasureContract.View> i
                             List<CezhanData> listCezhan = DataSupport.where("shuizhunxianID = ? ", String.valueOf(mShuizhunxianData.getId()))
                                     .order("number").find(CezhanData.class);
                             subscriber.onNext(listCezhan);
-
+                            KLog.e(TAG,"-----------requestCezhanData-----------");
                         } catch (Exception ex) {
                             subscriber.onError(ex);
                         }
@@ -142,6 +147,39 @@ public class MeasureRightPresenter extends BasePresenter<MeasureContract.View> i
                                 getView().responseCezhanData(mCezhanData);
                             }
                         })
+        );
+    }
+
+    public void requestResultData(final List<CezhanData> mCezhanData){
+        mRxManager.add(Observable.create(new Observable.OnSubscribe<List<CezhanData> >() {
+
+            @Override
+            public void call(Subscriber<? super List<CezhanData>> subscriber) {
+                if(null==instance){
+                    instance= new PingCha();
+                }
+                KLog.e(TAG,"==========0000000000000===========");
+                instance.initGaocha(mCezhanData);
+                instance.initData(mCezhanData);
+                isSaved=true;
+                subscriber.onNext(mCezhanData);
+                KLog.e(TAG,"============111111111111111========");
+            }
+
+        }).subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new RxSubscriber<List<CezhanData>>() {
+                    @Override
+                    public void _onNext(List<CezhanData> cezhanDatas) {
+                        if(isSaved){
+                            getView().saveResult();
+                            KLog.e(TAG,"=================222222222222222=================");
+                        }else{
+                            getView().setDialog("成果数据保存失败");
+                            KLog.e(TAG,"===============3333333333333333==============");
+                        }
+                    }
+                })
         );
     }
 

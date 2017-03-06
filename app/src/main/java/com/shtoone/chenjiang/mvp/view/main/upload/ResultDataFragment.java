@@ -14,12 +14,12 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.listener.OnItemClickListener;
 import com.shtoone.chenjiang.R;
 import com.shtoone.chenjiang.common.Constants;
+import com.shtoone.chenjiang.common.ToastUtils;
 import com.shtoone.chenjiang.mvp.contract.upload.ResultDataContract;
-import com.shtoone.chenjiang.mvp.model.entity.db.ResultData;
+import com.shtoone.chenjiang.mvp.model.entity.db.RTData;
 import com.shtoone.chenjiang.mvp.presenter.upload.ResultDataPresenter;
 import com.shtoone.chenjiang.mvp.view.adapter.ResultDataRVAdapter;
 import com.shtoone.chenjiang.mvp.view.base.BaseFragment;
-import com.shtoone.chenjiang.common.ToastUtils;
 import com.shtoone.chenjiang.widget.PageStateLayout;
 
 import java.net.ConnectException;
@@ -158,7 +158,7 @@ public class ResultDataFragment extends BaseFragment<ResultDataContract.Presente
     }
 
     @Override
-    public void response(List<ResultData> mResultData, int pagination) {
+    public void response(List<RTData> mResultData, int pagination) {
         if (mResultData.size() > 0) {
             if (pagination == 0) {
                 this.pagination = 0;//说明是第一页，或者是刷新,把页码重置为0，代表第一页。

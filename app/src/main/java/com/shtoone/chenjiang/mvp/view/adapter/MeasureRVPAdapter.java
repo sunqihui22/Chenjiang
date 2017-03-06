@@ -1,18 +1,27 @@
 package com.shtoone.chenjiang.mvp.view.adapter;
 
+import android.content.Context;
+
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.shtoone.chenjiang.R;
 import com.shtoone.chenjiang.common.AudioPlayer;
 import com.shtoone.chenjiang.common.Constants;
 import com.shtoone.chenjiang.common.Formula;
+import com.shtoone.chenjiang.inter.common.ObserverFactory;
+import com.shtoone.chenjiang.inter.common.ObserverType;
 import com.shtoone.chenjiang.mvp.model.entity.db.CezhanData;
+import com.shtoone.chenjiang.mvp.model.entity.db.OriginData;
 import com.shtoone.chenjiang.mvp.model.entity.db.YusheshuizhunxianData;
 import com.socks.library.KLog;
 
+import org.litepal.crud.DataSupport;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
+import java.util.Map;
+
+import static android.R.attr.tag;
 
 /**
  * Author：leguang on 2016/10/9 0009 15:49
@@ -22,13 +31,10 @@ public class MeasureRVPAdapter extends BaseQuickAdapter<CezhanData, BaseViewHold
     private static final String TAG = MeasureRVPAdapter.class.getSimpleName();
     private int currentPosition = 0;
     private int measureIndex = 0;
-    private int[] arrayBFFB = {0, Constants.b1, Constants.f1, Constants.f2, Constants.b2};
-    private int[] arrayFBBF = {0, Constants.f1, Constants.b1, Constants.b2, Constants.f2};
-    private int[] arrayAudioFBBF = {0, Constants.AUDIO_NEXTB, Constants.AUDIO_NEXTB, Constants.AUDIO_NEXTF, 0};
-    private int[] arrayAudioBFFB = {0, Constants.AUDIO_NEXTF, Constants.AUDIO_NEXTF, Constants.AUDIO_NEXTB, 0};//对于这个0是否会报错，后面再看
     int[] arraySequence = {0};
     int[] arrayAudio = {0};
     private SimpleDateFormat df;
+    private ObserverType observerType;
 
     public MeasureRVPAdapter() {
         super(R.layout.item_rvp_measure_right_fragment, null);
@@ -39,6 +45,9 @@ public class MeasureRVPAdapter extends BaseQuickAdapter<CezhanData, BaseViewHold
     protected void convert(BaseViewHolder holder, CezhanData mCezhanData) {
         int position = holder.getLayoutPosition() - this.getHeaderLayoutCount();
         //设置数据
+
+        KLog.e(TAG,"----------convert1111111111-------");
+        KLog.e(TAG,"observe==="+mCezhanData.getObserveType());
         holder.setText(R.id.tv_number_item_rvp_measure_right_fragment, mCezhanData.getNumber() + "")
                 .setText(R.id.tv_measure_direction_item_rvp_measure_right_fragment, mCezhanData.getMeasureDirection())
                 .setText(R.id.tv_qianshi_item_rvp_measure_right_fragment, "前视:" + mCezhanData.getQianshi())
@@ -91,9 +100,13 @@ public class MeasureRVPAdapter extends BaseQuickAdapter<CezhanData, BaseViewHold
                     break;
             }
         }
+
+//        DataSupport.deleteAll(OriginData.class);
     }
 
-    public void measure(int currentPosition, int measureIndex, String result) {
+
+    public void measure(int currentPosition, int measureIndex, String result,YusheshuizhunxianData mYusheshuizhunxianData,Context context) {
+        KLog.e(TAG,"resulr=:"+result);
         if (currentPosition > mData.size() - 1) {
             return;
         }
@@ -102,37 +115,67 @@ public class MeasureRVPAdapter extends BaseQuickAdapter<CezhanData, BaseViewHold
         this.currentPosition = currentPosition;
         this.measureIndex = measureIndex;
         CezhanData mCezhanData = mData.get(currentPosition);
+        OriginData originalData=new OriginData();
 
-        if (mCezhanData.getObserveType().equals(Constants.BFFB)) {
-            //偶数站
-            arraySequence = arrayBFFB;
-            arrayAudio = arrayAudioBFFB;
-        } else {
-            //奇数站
-            arraySequence = arrayFBBF;
-            arrayAudio = arrayAudioFBBF;
-        }
+//        observerType = ObserverFactory.createObserverType(mYusheshuizhunxianData);
+        //新加的代码
+        observerType = ObserverFactory.getInstance(context).createObserverType(mYusheshuizhunxianData);
+        Map<ObserverType.ArrayType, Object> arrayTypeObjectMap = observerType.setObserVerOrder(mCezhanData);
+        arrayAudio= (int[]) arrayTypeObjectMap.get(ObserverType.ArrayType.ARRAYAUDIO);
+        arraySequence= (int[]) arrayTypeObjectMap.get(ObserverType.ArrayType.ARRAYSEQUENCE);
 
         switch (arraySequence[measureIndex]) {
             case Constants.b1:
                 mCezhanData.setB1hd(result);
                 mCezhanData.setB1r(result);
                 mCezhanData.setB1time(df.format(Calendar.getInstance().getTime()));
+//                DataSupport.deleteAll(OriginData.class);
+                originalData.setGuancetime(mCezhanData.getB1time());
+                originalData.setQianhoushichidushu(mCezhanData.getB1r());
+                originalData.setQianhoushijuli(mCezhanData.getB1hd());
+                originalData.setQianhoushibiaojifu(Constants.B1);
+                originalData.setShuizhunxianluid(mYusheshuizhunxianData.getXianlubianhao());
+                originalData.save();
+                KLog.e(TAG,"-----------------b1-----------------");
                 break;
             case Constants.b2:
                 mCezhanData.setB2hd(result);
                 mCezhanData.setB2r(result);
                 mCezhanData.setB2time(df.format(Calendar.getInstance().getTime()));
+//                DataSupport.deleteAll(OriginData.class);
+                originalData.setGuancetime(mCezhanData.getB2time());
+                originalData.setQianhoushichidushu(mCezhanData.getB2r());
+                originalData.setQianhoushijuli(mCezhanData.getB2hd());
+                originalData.setQianhoushibiaojifu(Constants.B2);
+                originalData.setShuizhunxianluid(mYusheshuizhunxianData.getXianlubianhao());
+                originalData.save();
+                KLog.e(TAG,"-----------------b2-----------------");
                 break;
             case Constants.f1:
                 mCezhanData.setF1hd(result);
                 mCezhanData.setF1r(result);
                 mCezhanData.setF1time(df.format(Calendar.getInstance().getTime()));
+//                DataSupport.deleteAll(OriginData.class);
+                originalData.setGuancetime(mCezhanData.getF1time());
+                originalData.setQianhoushichidushu(mCezhanData.getF1r());
+                originalData.setQianhoushijuli(mCezhanData.getF1hd());
+                originalData.setQianhoushibiaojifu(Constants.F1);
+                originalData.setShuizhunxianluid(mYusheshuizhunxianData.getXianlubianhao());
+                originalData.save();
+                KLog.e(TAG,"-----------------f1-----------------");
                 break;
             case Constants.f2:
                 mCezhanData.setF2hd(result);
                 mCezhanData.setF2r(result);
                 mCezhanData.setF2time(df.format(Calendar.getInstance().getTime()));
+//                DataSupport.deleteAll(OriginData.class);
+                originalData.setGuancetime(mCezhanData.getF2time());
+                originalData.setQianhoushichidushu(mCezhanData.getF2r());
+                originalData.setQianhoushijuli(mCezhanData.getF2hd());
+                originalData.setQianhoushibiaojifu(Constants.F2);
+                originalData.setShuizhunxianluid(mYusheshuizhunxianData.getXianlubianhao());
+                originalData.save();
+                KLog.e(TAG,"-----------------f2-----------------");
                 break;
         }
         //播放提示音
@@ -160,6 +203,7 @@ public class MeasureRVPAdapter extends BaseQuickAdapter<CezhanData, BaseViewHold
 
 //            mCezhanData.setGaocha1(mFormula.gaocha1());
         }
+        KLog.e(TAG,"Cezhangaocha=:"+mCezhanData.getCezhangaocha());
         notifyDataSetChanged();
     }
 

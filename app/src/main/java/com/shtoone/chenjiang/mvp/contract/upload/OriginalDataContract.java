@@ -2,7 +2,7 @@ package com.shtoone.chenjiang.mvp.contract.upload;
 
 
 import com.shtoone.chenjiang.mvp.contract.base.BaseContract;
-import com.shtoone.chenjiang.mvp.model.entity.db.OriginalData;
+import com.shtoone.chenjiang.mvp.model.entity.db.OriginData;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ import java.util.List;
  */
 public interface OriginalDataContract {
     interface View extends BaseContract.View {
-        void response(List<OriginalData> mOriginalData, int pagination);
+        void response(List<OriginData> mOriginalData, int pagination);
     }
 
     interface Presenter extends BaseContract.Presenter {

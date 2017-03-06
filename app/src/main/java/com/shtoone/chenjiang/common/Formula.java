@@ -48,22 +48,26 @@ public class Formula {
     }
 
     private void initData(CezhanData mCezhanData) {
-        this.b1hd = Float.parseFloat(mCezhanData.getB1hd());
-        this.b2hd = Float.parseFloat(mCezhanData.getB2hd());
-        this.b1r = Float.parseFloat(mCezhanData.getB1r());
-        this.b2r = Float.parseFloat(mCezhanData.getB2r());
-        this.f1hd = Float.parseFloat(mCezhanData.getF1hd());
-        this.f2hd = Float.parseFloat(mCezhanData.getF2hd());
-        this.f1r = Float.parseFloat(mCezhanData.getF1r());
-        this.f2r = Float.parseFloat(mCezhanData.getF2r());
+        try {
+            this.b1hd = Float.parseFloat(mCezhanData.getB1hd());
+            this.b2hd = Float.parseFloat(mCezhanData.getB2hd());
+            this.b1r = Float.parseFloat(mCezhanData.getB1r());
+            this.b2r = Float.parseFloat(mCezhanData.getB2r());
+            this.f1hd = Float.parseFloat(mCezhanData.getF1hd());
+            this.f2hd = Float.parseFloat(mCezhanData.getF2hd());
+            this.f1r = Float.parseFloat(mCezhanData.getF1r());
+            this.f2r = Float.parseFloat(mCezhanData.getF2r());
 
-        KLog.e("init：：" + b1hd);
-        KLog.e("init：：" + b2hd);
-        KLog.e("init：：" + b1r);
-        KLog.e("init：：" + b2r);
-        KLog.e("init：：" + f1hd);
-        KLog.e("init：：" + f2hd);
-        KLog.e("init：：" + f1r);
+            KLog.e("init：：" + b1hd);
+            KLog.e("init：：" + b2hd);
+            KLog.e("init：：" + b1r);
+            KLog.e("init：：" + b2r);
+            KLog.e("init：：" + f1hd);
+            KLog.e("init：：" + f2hd);
+            KLog.e("init：：" + f1r);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
     }
 
     //后视距和
@@ -105,5 +109,13 @@ public class Formula {
     //BR读数差
     public String brdushucha() {
         return mDecimalFormat.format(b1r - b2r);
+    }
+
+    public float qianshiju(){
+        return (b1hd + b2hd) / 2;
+    }
+
+    public float houshiju(){
+        return (f1hd + f2hd) / 2;
     }
 }

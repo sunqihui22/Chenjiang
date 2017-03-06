@@ -2,6 +2,7 @@ package com.shtoone.chenjiang.mvp.view.main.measure;
 
 import android.app.Dialog;
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -22,6 +23,7 @@ import com.shtoone.chenjiang.R;
 import com.shtoone.chenjiang.common.AudioPlayer;
 import com.shtoone.chenjiang.common.Constants;
 import com.shtoone.chenjiang.common.DialogHelper;
+import com.shtoone.chenjiang.common.PingCha;
 import com.shtoone.chenjiang.common.ToastUtils;
 import com.shtoone.chenjiang.mvp.contract.measure.MeasureContract;
 import com.shtoone.chenjiang.mvp.model.entity.db.CezhanData;
@@ -64,6 +66,8 @@ public class MeasureRightFragment extends BaseFragment<MeasureContract.Presenter
     private ViewGroup viewGroup;
     private AlertDialog.Builder deviceListBuilder;
     private AlertDialog pingchaDialog;
+    Context context;
+    List<CezhanData> mCezhanData;
 
     public static MeasureRightFragment newInstance(YusheshuizhunxianData mYusheshuizhunxianData) {
         Bundle args = new Bundle();
@@ -77,6 +81,7 @@ public class MeasureRightFragment extends BaseFragment<MeasureContract.Presenter
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        context=getContext();
         Bundle args = getArguments();
         if (args != null) {
             mYusheshuizhunxianData = (YusheshuizhunxianData) args.getSerializable(Constants.YUSHESHUIZHUNXIAN);
@@ -130,6 +135,7 @@ public class MeasureRightFragment extends BaseFragment<MeasureContract.Presenter
                         if (mYusheshuizhunxianData.getStatus().equals(Constants.status_daipingcha)
                                 || mYusheshuizhunxianData.getStatus().equals(Constants.status_daishanchu)) {
                             //进行平差
+                            pingchaDialog();
                             ToastUtils.showToast(_mActivity, "正在进行平差处理，请稍后……");
                             storeData();
                         } else {
@@ -271,8 +277,15 @@ public class MeasureRightFragment extends BaseFragment<MeasureContract.Presenter
 
     @Override
     public void responseCezhanData(List<CezhanData> listCezhan) {
+        KLog.e(TAG,"----------------responseCezhanData----------------");
         mAdapter.setNewData(listCezhan);
+        mCezhanData=listCezhan;
         mRecyclerView.scrollToPosition(mYusheshuizhunxianData.getMeasurePosition());
+    }
+
+    public void saveResult(){
+        DialogHelper.successSnackbar(viewGroup, "成果数据保存成功", DialogHelper.APPEAR_FROM_TOP_TO_DOWN);
+        KLog.e(TAG,"=============saveResult===========");
     }
 
     @Override
@@ -352,7 +365,8 @@ public class MeasureRightFragment extends BaseFragment<MeasureContract.Presenter
             return;
         }
         mYusheshuizhunxianData.setMeasureIndex(mYusheshuizhunxianData.getMeasureIndex() + 1);
-        mAdapter.measure(mYusheshuizhunxianData.getMeasurePosition(), mYusheshuizhunxianData.getMeasureIndex(), str);
+        mAdapter.measure(mYusheshuizhunxianData.getMeasurePosition(), mYusheshuizhunxianData.getMeasureIndex(), str,mYusheshuizhunxianData,context);
+        KLog.e(TAG,"------------onDataReceived---------");
         //调试用的，或者发送指令
         mPresenter.sendData((mYusheshuizhunxianData.getMeasureIndex() + "\n").getBytes());
         if (mYusheshuizhunxianData.getMeasureIndex() == 4) {
@@ -381,8 +395,10 @@ public class MeasureRightFragment extends BaseFragment<MeasureContract.Presenter
         super.onDestroy();
     }
 
+
     private void storeData() {
         mYusheshuizhunxianData.save();
+        //保存测站数据
         DataSupport.saveAll(mAdapter.getData());
     }
 
@@ -393,6 +409,7 @@ public class MeasureRightFragment extends BaseFragment<MeasureContract.Presenter
                 .setIcon(R.drawable.ic_error_outline_red_400_48dp)
                 .setTitle(R.string.dialog_title_exit)
                 .setMessage(R.string.dialog_content_exit)
+
                 .setNegativeButton(R.string.dialog_negativeText, null)
                 .setPositiveButton(R.string.dialog_positiveText, new DialogInterface.OnClickListener() {
                     @Override
@@ -418,7 +435,7 @@ public class MeasureRightFragment extends BaseFragment<MeasureContract.Presenter
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             ToastUtils.showToast(_mActivity, "正在进行平差处理，请稍后……");
-
+                           mPresenter.requestResultData(mCezhanData);
                             //平差完了之后就是待上传
 
                             mYusheshuizhunxianData.setStatus(Constants.status_daishanchu);

@@ -2,6 +2,7 @@ package com.shtoone.chenjiang.mvp.presenter.upload;
 
 import com.shtoone.chenjiang.common.Constants;
 import com.shtoone.chenjiang.mvp.contract.upload.ResultDataContract;
+import com.shtoone.chenjiang.mvp.model.entity.db.RTData;
 import com.shtoone.chenjiang.mvp.model.entity.db.ResultData;
 import com.shtoone.chenjiang.mvp.presenter.base.BasePresenter;
 
@@ -34,15 +35,15 @@ public class ResultDataPresenter extends BasePresenter<ResultDataContract.View> 
 
     @Override
     public void request(final int pagination) {
-        mRxManager.add(Observable.create(new Observable.OnSubscribe<List<ResultData>>() {
+        mRxManager.add(Observable.create(new Observable.OnSubscribe<List<RTData>>() {
                     @Override
-                    public void call(Subscriber<? super List<ResultData>> subscriber) {
-                        List<ResultData> mResultData = null;
+                    public void call(Subscriber<? super List<RTData>> subscriber) {
+                        List<RTData> mResultData = null;
                         try {
                             mResultData = DataSupport.select("*")
                                     .order("id").limit(Constants.PAGE_SIZE)
                                     .offset(pagination * Constants.PAGE_SIZE)
-                                    .find(ResultData.class);
+                                    .find(RTData.class);
                             subscriber.onNext(mResultData);
                         } catch (Exception ex) {
                             subscriber.onError(ex);
@@ -53,9 +54,9 @@ public class ResultDataPresenter extends BasePresenter<ResultDataContract.View> 
                         }
                     }
                 }).subscribeOn(Schedulers.computation())
-                        .observeOn(AndroidSchedulers.mainThread()).subscribe(new RxSubscriber<List<ResultData>>() {
+                        .observeOn(AndroidSchedulers.mainThread()).subscribe(new RxSubscriber<List<RTData>>() {
                             @Override
-                            public void _onNext(List<ResultData> mResultData) {
+                            public void _onNext(List<RTData> mResultData) {
                                 getView().response(mResultData, pagination);
                             }
                         })

@@ -34,6 +34,8 @@ public interface MeasureContract {
         void onDevicesFound(List<BluetoothDevice> deviceList);
 
         void onDataReceived(String str);
+
+        void saveResult();
     }
 
     interface Presenter extends BaseContract.Presenter {
@@ -50,5 +52,7 @@ public interface MeasureContract {
         void connectPaired(Activity mActivity);
 
         void sendData(byte[] data);
+
+        void requestResultData(final List<CezhanData> mCezhanData);
     }
 }

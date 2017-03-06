@@ -29,6 +29,8 @@ import com.shtoone.chenjiang.common.Constants;
 import com.shtoone.chenjiang.common.DialogHelper;
 import com.shtoone.chenjiang.event.EventData;
 import com.shtoone.chenjiang.mvp.contract.ShuizhunxianContract;
+import com.shtoone.chenjiang.mvp.model.entity.db.OriginData;
+import com.shtoone.chenjiang.mvp.model.entity.db.RTData;
 import com.shtoone.chenjiang.mvp.model.entity.db.YusheshuizhunxianData;
 import com.shtoone.chenjiang.mvp.presenter.EditShuizhunxianPresenter;
 import com.shtoone.chenjiang.mvp.view.base.BaseFragment;
@@ -36,6 +38,7 @@ import com.shtoone.chenjiang.utils.DensityUtils;
 import com.socks.library.KLog;
 
 import org.greenrobot.eventbus.EventBus;
+import org.litepal.crud.DataSupport;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -187,10 +190,14 @@ public class EditShuizhunxianFragment extends BaseFragment<ShuizhunxianContract.
     }
 
     private void save() {
+        KLog.e(TAG,"-------------------save--------pre-----------");
         String strRouteType = (String) spinnerRouteType.getItems().get(spinnerRouteType.getSelectedIndex());
         mYusheshuizhunxianData.setRouteType(strRouteType);
+        //把MaterialSpinner中选择的线路观测类型设置给YusheshuizhunxianData
         String strObserveType = (String) spinnerObserveType.getItems().get(spinnerObserveType.getSelectedIndex());
         mYusheshuizhunxianData.setObserveType(strObserveType);
+        DataSupport.deleteAll(OriginData.class);
+        DataSupport.deleteAll(RTData.class);
         String strWeather = (String) spinnerWeather.getItems().get(spinnerWeather.getSelectedIndex());
         mYusheshuizhunxianData.setWeather(strWeather);
         String strStaff = (String) spinnerStaff.getItems().get(spinnerStaff.getSelectedIndex());
@@ -198,6 +205,7 @@ public class EditShuizhunxianFragment extends BaseFragment<ShuizhunxianContract.
         mYusheshuizhunxianData.setTemperature(etTemperature.getText().toString());
         mYusheshuizhunxianData.setPressure(etPressure.getText().toString());
         mPresenter.save(mYusheshuizhunxianData, tvDate.getText().toString());
+        KLog.e(TAG,"-------------------save--------next-----------");
     }
 
     private void initData() {
@@ -260,6 +268,7 @@ public class EditShuizhunxianFragment extends BaseFragment<ShuizhunxianContract.
             }
         }
 
+        //选择观测类型
         spinnerObserveType.setItems(arrayObserveType);
         if (!TextUtils.isEmpty(mYusheshuizhunxianData.getObserveType())) {
             for (int i = 0; i < arrayObserveType.length; i++) {

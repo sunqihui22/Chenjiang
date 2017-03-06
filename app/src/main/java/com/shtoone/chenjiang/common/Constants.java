@@ -26,7 +26,7 @@ public class Constants {
     public static final String PATH_APK_CACHE = PATH_DATA + File.separator + "ApkCache";
 
     //基地址
-    public static final String BASE_URL = "http://192.168.11.120:8081/ljcjqms/";
+    public static final String BASE_URL = "http://192.168.11.118:8081/ljcjqms/";
 
     //登录地址
     public static final String LOGIN_URL = BASE_URL + "app.do?AppLogin&userName=%1&userPwd=%2&OSType=2";
@@ -130,12 +130,30 @@ public class Constants {
     public static final int f1 = 3;
     public static final int f2 = 4;
 
-    //观测类型
+    //测站观测类型
     public static final String BFFB = "BFFB";
     public static final String FBBF = "FBBF";
+    public static final String BBFF = "BBFF";
 
     //观测方向
     public static final String wangce = "往测";
     public static final String fance = "反测";
 
+    //测量路线是平原还是山地
+    public static final int PINGYUAN =0 ;
+    public static final int SHANDI =1 ;
+
+    //路线观测类型
+    public static final String TYPE1="往:aBFFB 返:aFBBF";
+    public static final String TYPE2="往:aBFFB 返:aBFFB";
+    public static final String TYPE3="aBFFB";
+    public static final String TYPE4="BBFF";
+
+    public static final String ORFINAL="往:aBFFB 返:aFBBF";
+
+    //前后视距标识符
+    public static final String B1="B1";
+    public static final String B2="B2";
+    public static final String F1="F1";
+    public static final String F2="F2";
 }

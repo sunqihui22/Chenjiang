@@ -189,4 +189,30 @@ public class ShuizhunxianData extends DataSupport implements Serializable {
     public void setYusheshuizhunxianID(long yusheshuizhunxianID) {
         this.yusheshuizhunxianID = yusheshuizhunxianID;
     }
+
+    @Override
+    public String toString() {
+        return "ShuizhunxianData{" +
+                "id=" + id +
+                ", biaoshi='" + biaoshi + '\'' +
+                ", ysszxid='" + ysszxid + '\'' +
+                ", xianlubianhao='" + xianlubianhao + '\'' +
+                ", cedianshu='" + cedianshu + '\'' +
+                ", leixing='" + leixing + '\'' +
+                ", shezhiren='" + shezhiren + '\'' +
+                ", xianlumingcheng='" + xianlumingcheng + '\'' +
+                ", chuangjianshijian='" + chuangjianshijian + '\'' +
+                ", xiugaishijian='" + xiugaishijian + '\'' +
+                ", departId='" + departId + '\'' +
+                ", jidianshu='" + jidianshu + '\'' +
+                ", xianluxinxi='" + xianluxinxi + '\'' +
+                ", routeType='" + routeType + '\'' +
+                ", observeType='" + observeType + '\'' +
+                ", weather='" + weather + '\'' +
+                ", pressure='" + pressure + '\'' +
+                ", temperature='" + temperature + '\'' +
+                ", staff='" + staff + '\'' +
+                ", yusheshuizhunxianID=" + yusheshuizhunxianID +
+                '}';
+    }
 }

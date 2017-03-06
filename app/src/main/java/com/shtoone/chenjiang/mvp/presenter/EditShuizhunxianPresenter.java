@@ -7,6 +7,7 @@ import com.shtoone.chenjiang.mvp.model.entity.db.ShuizhunxianData;
 import com.shtoone.chenjiang.mvp.model.entity.db.StaffData;
 import com.shtoone.chenjiang.mvp.model.entity.db.YusheshuizhunxianData;
 import com.shtoone.chenjiang.mvp.presenter.base.BasePresenter;
+import com.socks.library.KLog;
 
 import org.litepal.crud.DataSupport;
 
@@ -95,30 +96,56 @@ public class EditShuizhunxianPresenter extends BasePresenter<ShuizhunxianContrac
                                     mCezhanData.setNumber(intNumber);
                                     mCezhanData.setShuizhunxianID(mShuizhunxianData.getId());
                                     mCezhanData.setMeasureDirection(Constants.wangce);
-                                    if (intNumber % 2 == 0) {
-                                        mCezhanData.setObserveType(Constants.FBBF);
-                                    } else {
-                                        mCezhanData.setObserveType(Constants.BFFB);
+                                    //+++++新加的代码，往测时，当路线观测类型为"往:aBFFB 返:aFBBF","往:aBFFB 返:aBFFB","aBFFB"时,测站的观测顺序
+                                    if(mYusheshuizhunxianData.getObserveType().equals(Constants.TYPE1)||mYusheshuizhunxianData.getObserveType().equals(Constants.TYPE2)||mYusheshuizhunxianData.getObserveType().equals(Constants.TYPE3)){
+                                        if (intNumber % 2 == 0) {
+                                            //设置测站的观测类型
+                                            KLog.e(TAG,"--------wangce-----555555--------------");
+                                            mCezhanData.setObserveType(Constants.FBBF);
+                                        } else {
+                                            KLog.e(TAG,"----------wangce-----666666--------------");
+                                            mCezhanData.setObserveType(Constants.BFFB);
+                                        }
+                                    }else if(mYusheshuizhunxianData.getObserveType().equals(Constants.TYPE4)){
+                                        mCezhanData.setObserveType(Constants.BBFF);
                                     }
+
                                     mCezhanData.setQianshi(arrayJidianAndCedian[i + 1]);
                                     mCezhanData.setHoushi(arrayJidianAndCedian[i]);
                                     listCezhan.add(mCezhanData);
                                 }
-                                //生成返测数据
-                                for (int i = arrayJidianAndCedian.length - 1; i > 0; i--) {
-                                    intNumber++;
-                                    CezhanData mCezhanData = new CezhanData();
-                                    mCezhanData.setNumber(intNumber);
-                                    mCezhanData.setShuizhunxianID(mShuizhunxianData.getId());
-                                    mCezhanData.setMeasureDirection(Constants.fance);
-                                    if (intNumber % 2 == 0) {
-                                        mCezhanData.setObserveType(Constants.BFFB);
-                                    } else {
-                                        mCezhanData.setObserveType(Constants.FBBF);
+
+                                if(mYusheshuizhunxianData.getObserveType().equals(Constants.TYPE1)||mYusheshuizhunxianData.getObserveType().equals(Constants.TYPE2)){
+                                    //生成返测数据
+                                    for (int i = arrayJidianAndCedian.length - 1; i > 0; i--) {
+                                        intNumber++;
+                                        CezhanData mCezhanData = new CezhanData();
+                                        mCezhanData.setNumber(intNumber);
+                                        mCezhanData.setShuizhunxianID(mShuizhunxianData.getId());
+                                        mCezhanData.setMeasureDirection(Constants.fance);
+                                        //----新加的代码，返测时,当路线观测类型为"往:aBFFB 返:aFBBF",测站的观测顺序
+                                        if(mYusheshuizhunxianData.getObserveType().equals(Constants.TYPE1)){
+                                            if (intNumber % 2 == 0) {
+                                                KLog.e(TAG,"----------fance---11111111--------------");
+                                                mCezhanData.setObserveType(Constants.BFFB);
+                                            } else {
+                                                KLog.e(TAG,"--------fance-----22222222--------------");
+                                                mCezhanData.setObserveType(Constants.FBBF);
+                                            }
+                                        }else if(mYusheshuizhunxianData.getObserveType().equals(Constants.TYPE2)){
+                                            if (intNumber % 2 == 0) {
+                                                KLog.e(TAG,"----------fance------33333333--------------");
+                                                mCezhanData.setObserveType(Constants.FBBF);
+                                            } else {
+                                                KLog.e(TAG,"--------fance-----44444444--------------");
+                                                mCezhanData.setObserveType(Constants.BFFB);
+                                            }
+                                        }
+
+                                        mCezhanData.setQianshi(arrayJidianAndCedian[i - 1]);
+                                        mCezhanData.setHoushi(arrayJidianAndCedian[i]);
+                                        listCezhan.add(mCezhanData);
                                     }
-                                    mCezhanData.setQianshi(arrayJidianAndCedian[i - 1]);
-                                    mCezhanData.setHoushi(arrayJidianAndCedian[i]);
-                                    listCezhan.add(mCezhanData);
                                 }
                                 DataSupport.deleteAll(CezhanData.class, "shuizhunxianID = ? ", String.valueOf(mShuizhunxianData.getId()));
                                 DataSupport.saveAll(listCezhan);
@@ -130,6 +157,7 @@ public class EditShuizhunxianPresenter extends BasePresenter<ShuizhunxianContrac
                             }
 
                             if (mShuizhunxianData != null) {
+                                KLog.e(TAG,"----------------------save-----------------");
                                 mShuizhunxianData.setYusheshuizhunxianID(mYusheshuizhunxianData.getId());
                                 mShuizhunxianData.setBiaoshi(mYusheshuizhunxianData.getBiaoshi());
                                 mShuizhunxianData.setYsszxid(mYusheshuizhunxianData.getYsszxid());
@@ -143,6 +171,8 @@ public class EditShuizhunxianPresenter extends BasePresenter<ShuizhunxianContrac
                                 mShuizhunxianData.setXianluxinxi(mYusheshuizhunxianData.getXianluxinxi());
                                 mShuizhunxianData.setRouteType(mYusheshuizhunxianData.getRouteType());
                                 mShuizhunxianData.setObserveType(mYusheshuizhunxianData.getObserveType());
+                                KLog.e(TAG,"mShuizhunxianData=:"+mShuizhunxianData.getCedianshu());
+                                KLog.e(TAG,"mShuizhunxianData.getObserveType()=:"+mShuizhunxianData.getObserveType());
                                 mShuizhunxianData.setWeather(mYusheshuizhunxianData.getWeather());
                                 mShuizhunxianData.setPressure(mYusheshuizhunxianData.getPressure());
                                 mShuizhunxianData.setTemperature(mYusheshuizhunxianData.getTemperature());

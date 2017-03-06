@@ -14,14 +14,16 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.listener.OnItemClickListener;
 import com.shtoone.chenjiang.R;
 import com.shtoone.chenjiang.common.Constants;
+import com.shtoone.chenjiang.common.ToastUtils;
 import com.shtoone.chenjiang.mvp.contract.upload.OriginalDataContract;
-import com.shtoone.chenjiang.mvp.model.entity.db.OriginalData;
+import com.shtoone.chenjiang.mvp.model.entity.db.OriginData;
 import com.shtoone.chenjiang.mvp.presenter.upload.OriginalDataPresenter;
 import com.shtoone.chenjiang.mvp.view.adapter.OriginalDataRVAdapter;
 import com.shtoone.chenjiang.mvp.view.base.BaseFragment;
-import com.shtoone.chenjiang.common.ToastUtils;
 import com.shtoone.chenjiang.widget.PageStateLayout;
 import com.socks.library.KLog;
+
+import org.litepal.crud.DataSupport;
 
 import java.net.ConnectException;
 import java.util.List;
@@ -102,6 +104,7 @@ public class OriginalDataFragment extends BaseFragment<OriginalDataContract.Pres
         mAdapter = new OriginalDataRVAdapter();
         mAdapter.removeAllFooterView();
         recyclerview.setAdapter(mAdapter);
+//        DataSupport.deleteAll(OriginData.class);
     }
 
     private void setLoadMore() {
@@ -160,7 +163,7 @@ public class OriginalDataFragment extends BaseFragment<OriginalDataContract.Pres
     }
 
     @Override
-    public void response(List<OriginalData> mOriginalData, int pagination) {
+    public void response(List<OriginData> mOriginalData, int pagination) {
         KLog.e("mOriginalData::" + mOriginalData.size());
         if (mOriginalData.size() > 0) {
             if (pagination == 0) {
@@ -185,6 +188,7 @@ public class OriginalDataFragment extends BaseFragment<OriginalDataContract.Pres
                 mAdapter.notifyDataSetChanged();//这里必须要notify一下，否则会报错，因为我修改了footer。
             }
         }
+//        DataSupport.deleteAll(OriginData.class);
     }
 
     @Override
